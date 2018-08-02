@@ -4,25 +4,28 @@ import (
 	_ "github.com/kidoman/embd/host/rpi" // This loads the RPi driver
 	"github.com/nathany/bobblehat/sense/screen"
 	"github.com/nathany/bobblehat/sense/screen/color"
-	"github.com/kidoman/embd"
-	"log"
-	"fmt"
-	"time"
-)
+				)
+
+type senseScreen struct {
+	fb *screen.FrameBuffer
+}
+
+func NewSenseScreen() (ss *senseScreen) {
+	ss.fb = screen.NewFrameBuffer()
+	return
+}
+
+func (ss *senseScreen) SetPixel(x, y int, c color.Color) {
+	ss.fb.SetPixel(x, y, c)
+	screen.Draw(ss.fb)
+}
 
 func LightLed() {
 	fb := screen.NewFrameBuffer()
 	fb.SetPixel(0, 0, color.Red)
 	screen.Draw(fb)
+}
 
-	bus := embd.NewI2CBus(1)
+func init() {
 
-	go func() {
-		res, err := bus.ReadByte(0x5c)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		fmt.Println(res)
-		time.Sleep(time.Second)
-	}()
 }
