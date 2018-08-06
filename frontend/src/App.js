@@ -6,6 +6,7 @@ import Toolbar from '@material-ui/core/Toolbar/Toolbar';
 import Typography from '@material-ui/core/Typography/Typography';
 import Card from '@material-ui/core/Card/Card';
 import CardContent from '@material-ui/core/CardContent/CardContent';
+import ChartArea from './ChartArea';
 
 const styles = {
   card: {
@@ -34,9 +35,9 @@ class App extends Component {
   render() {
     let dataDivs = [];
     for (let i = 0; i < this.state.sensorData.length; i++) {
-      dataDivs.push(<DotDiv key={'h'+i} color={'#0000FF'} x={i} y={this.state.sensorData[i]['humid']} />)
-      dataDivs.push(<DotDiv key={'p'+i} color={'#FFFF00'} x={i} y={this.state.sensorData[i]['pres']/100} />)
-      dataDivs.push(<DotDiv key={'t'+i} color={'#FF0000'} x={i} y={this.state.sensorData[i]['temp']} />)
+      dataDivs.push(<DotDiv key={'h' + i} color={'#0000FF'} x={i} y={this.state.sensorData[i]['humid']}/>)
+      dataDivs.push(<DotDiv key={'p' + i} color={'#FFFF00'} x={i} y={this.state.sensorData[i]['pres'] / 100}/>)
+      dataDivs.push(<DotDiv key={'t' + i} color={'#FF0000'} x={i} y={this.state.sensorData[i]['temp']}/>)
     }
     return (
       <div className="App">
@@ -54,18 +55,15 @@ class App extends Component {
           </CardContent>
         </Card>
 
-        {dataDivs}
-        {/*<div>Humidity: {this.state.sensorData.filter(d => d.humid)}</div>*/}
-        {/*<div>Pressure: {this.state.sensorData}</div>*/}
-        {/*<div>Temperature: {this.state.temp}</div>*/}
+        <ChartArea graphName={'Line'} graphData={[["age", "weight"], [8,12], [10,5]]}/>
 
-        {/*<button onClick={this.getApi}>get stuff</button>*/}
+        {dataDivs}
       </div>
     );
   }
 
   getApi = () => {
-    fetch('/api/sensor-data/', {
+    fetch('http://82.69.95.51/api/sensor-data/', {
       headers: {
         "content-type": "application/json"
       }
