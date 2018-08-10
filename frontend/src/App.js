@@ -18,27 +18,29 @@ const styles = {
   },
 };
 
+const options = {
+  title: "Environment metrics",
+  curveType: "function",
+  chartArea: {width: '90%', height: '80%'},
+  legend: {position: "bottom"}
+};
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      sensorData: []
+      chartHeaders: ['Time', 'Humidity (%)', 'Temperature (°C)', 'Pressure (cbar)'],
+      chartData: []
     };
   }
 
   componentDidMount() {
+    this.getApi();
     setInterval(this.getApi, 1000);
   }
 
   render() {
-    let dataDivs = [];
-    for (let i = 0; i < this.state.sensorData.length; i++) {
-      dataDivs.push(<DotDiv key={'h' + i} color={'#0000FF'} x={i} y={this.state.sensorData[i]['humid']}/>)
-      dataDivs.push(<DotDiv key={'p' + i} color={'#FFFF00'} x={i} y={this.state.sensorData[i]['pres'] / 100}/>)
-      dataDivs.push(<DotDiv key={'t' + i} color={'#FF0000'} x={i} y={this.state.sensorData[i]['temp']}/>)
-    }
     return (
       <div className="App">
         <AppBar>
@@ -55,9 +57,9 @@ class App extends Component {
           </CardContent>
         </Card>
 
-        <ChartArea graphName={'Line'} graphData={[["age", "weight"], [8,12], [10,5]]}/>
+        <ChartArea graphName={'Line'} graphData={[this.state.chartHeaders, ...this.state.chartData]}
+                   chartOptions={options}/>
 
-        {dataDivs}
       </div>
     );
   }
@@ -70,10 +72,11 @@ class App extends Component {
     })
       .then(res => res.json())
       .then(res => {
-        let data = this.state.sensorData;
-        data.push(res);
-        this.setState({sensorData: data});
-        console.log(this.state.sensorData);
+        // do chart data
+        let chartData = this.state.chartData;
+        chartData.push([chartData.length, parseFloat(res['humid']), parseFloat(res['temp']), parseFloat(res['pres']) / 100]);
+        this.setState({chartData: chartData});
+        // console.log('Chart Data:', this.state.chartData);
       })
   }
 }
