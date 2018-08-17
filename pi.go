@@ -10,6 +10,9 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"github.com/gorilla/handlers"
+	"os/exec"
+	"bytes"
+	"strings"
 )
 
 type sensorData struct {
@@ -18,7 +21,29 @@ type sensorData struct {
 	temp float64
 }
 
+func getSensorData() ([]byte, error) {
+	cmd := exec.Command("sqlite3", "sensordata.db", "SELECT * FROM sensordata;")
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func main() {
+	// run commands
+	data, err := getSensorData()
+	if err != nil {
+		log.Fatalln("failed to fetch sensor data")
+	}
+	rows := bytes.Split(data, []byte{'\n'})
+
+	var rowData [][]string
+	for _,v := range rows {
+		rowData = append(rowData, strings.Split(string(v), "|"))
+	}
+
 	router := mux.NewRouter().StrictSlash(false)
 
 	// handle static files for angular
